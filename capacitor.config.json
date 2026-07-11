@@ -1,0 +1,8 @@
+{
+  "appId": "com.cielinfitech.aestheticshade",
+  "appName": "AestheticShade AI",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}
