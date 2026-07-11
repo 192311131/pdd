@@ -1,9 +1,26 @@
-import React from 'react';
-import { Printer, RefreshCw, CheckCircle, FileText, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { Printer, RefreshCw, CheckCircle, FileText, Sparkles, Save, Loader2 } from 'lucide-react';
+import { isSupabaseConfigured } from '../lib/supabaseClient';
+import { saveCase } from '../lib/cases';
 
 export default function ClinicalReport({ patientInfo, scanResults, plannerConfig, onReset }) {
   const printReport = () => {
     window.print();
+  };
+
+  const [saveState, setSaveState] = useState('idle'); // idle | saving | saved | error
+  const [saveError, setSaveError] = useState(null);
+
+  const handleSave = async () => {
+    setSaveState('saving');
+    setSaveError(null);
+    try {
+      await saveCase({ patientInfo, scanResults, plannerConfig });
+      setSaveState('saved');
+    } catch (err) {
+      setSaveState('error');
+      setSaveError(err.message || 'Save failed.');
+    }
   };
 
   // Extract values dynamically with fallbacks matching Step 9 requirements
@@ -50,11 +67,27 @@ export default function ClinicalReport({ patientInfo, scanResults, plannerConfig
           <CheckCircle size={18} />
           <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>Clinical Restoration Plan Locked</span>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          {saveState === 'error' && (
+            <span style={{ fontSize: '0.75rem', color: 'var(--error)', maxWidth: '220px' }}>{saveError}</span>
+          )}
           <button className="btn-secondary" onClick={onReset} style={{ fontSize: '0.9rem' }}>
             <RefreshCw size={14} />
             New Patient Case
           </button>
+          {isSupabaseConfigured && (
+            <button
+              className="btn-secondary"
+              onClick={handleSave}
+              disabled={saveState === 'saving' || saveState === 'saved'}
+              style={{ fontSize: '0.9rem', borderColor: saveState === 'saved' ? 'var(--success)' : undefined, color: saveState === 'saved' ? 'var(--success)' : undefined }}
+            >
+              {saveState === 'saving' ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+                : saveState === 'saved' ? <CheckCircle size={14} />
+                : <Save size={14} />}
+              {saveState === 'saving' ? 'Saving…' : saveState === 'saved' ? 'Saved' : 'Save to Database'}
+            </button>
+          )}
           <button className="btn-primary" onClick={printReport} style={{ fontSize: '0.9rem' }}>
             <Printer size={14} />
             Print / Export PDF

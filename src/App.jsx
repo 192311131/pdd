@@ -4,7 +4,9 @@ import ToothScanner from './components/ToothScanner';
 import LayeringPlanner from './components/LayeringPlanner';
 import SplitComparison from './components/SplitComparison';
 import ClinicalReport from './components/ClinicalReport';
-import { Camera, Upload, Image as ImageIcon, CheckCircle, AlertTriangle, XCircle, RefreshCw, Activity, Sparkles, ShieldCheck, Cpu } from 'lucide-react';
+import { Camera, Upload, Image as ImageIcon, CheckCircle, AlertTriangle, XCircle, RefreshCw, Activity, Sparkles, ShieldCheck, Cpu, FolderOpen, LogOut } from 'lucide-react';
+import { useAuth } from './lib/useAuth';
+import SavedCasesModal from './components/SavedCasesModal';
 
 export default function App() {
   const [step, setStep] = useState('hero'); // hero, upload, quality, scan, plan, compare, report
@@ -28,6 +30,27 @@ export default function App() {
 
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
+
+  // Auth + saved cases
+  const { user, configured, signOut } = useAuth();
+  const [showCases, setShowCases] = useState(false);
+
+  // Load a saved case straight into the report view.
+  const loadCase = (row) => {
+    setPatientInfo({
+      patientName: row.patient_name,
+      patientId: row.patient_id,
+      caseType: row.case_type,
+      notes: row.notes,
+    });
+    setScanResults(row.scan_results);
+    setPlannerConfig(row.planner_config);
+    setUploadedImage(null);
+    setActiveSample(null);
+    stopCamera();
+    setShowCases(false);
+    setStep('report');
+  };
 
   // Run the canvas-based pixel quality diagnostics
   const runQualityDiagnostics = (imgSrc) => {
@@ -372,12 +395,29 @@ export default function App() {
           </div>
         )}
 
-        {step !== 'upload' && (
-          <button className="btn-secondary no-print" onClick={resetWorkflow} style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>
-            Reset Case
-          </button>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {configured && user && (
+            <>
+              <button className="btn-secondary no-print" onClick={() => setShowCases(true)} style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <FolderOpen size={14} /> My Cases
+              </button>
+              <span className="no-print" title={user.email} style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {user.email}
+              </span>
+              <button className="btn-secondary no-print" onClick={signOut} title="Sign out" style={{ padding: '0.4rem 0.55rem', fontSize: '0.8rem' }}>
+                <LogOut size={14} />
+              </button>
+            </>
+          )}
+          {step !== 'upload' && (
+            <button className="btn-secondary no-print" onClick={resetWorkflow} style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>
+              Reset Case
+            </button>
+          )}
+        </div>
       </header>
+
+      {showCases && <SavedCasesModal onClose={() => setShowCases(false)} onOpen={loadCase} />}
 
       {/* Main Workspace */}
       <main style={{ flexGrow: 1 }}>
