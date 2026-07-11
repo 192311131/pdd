@@ -5,6 +5,7 @@ import LayeringPlanner from './components/LayeringPlanner';
 import SplitComparison from './components/SplitComparison';
 import ClinicalReport from './components/ClinicalReport';
 import { Camera, Upload, Image as ImageIcon, CheckCircle, AlertTriangle, XCircle, RefreshCw, Activity, Sparkles, ShieldCheck, Cpu, FolderOpen, LogOut } from 'lucide-react';
+import Logo from './components/Logo';
 import { useAuth } from './lib/useAuth';
 import SavedCasesModal from './components/SavedCasesModal';
 
@@ -353,28 +354,19 @@ export default function App() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-deep)' }}>
       
       {/* Header */}
-      <header className="no-print" style={{ 
-        background: 'var(--bg-base)', 
+      <header className="no-print" style={{
+        background: 'var(--bg-base)',
         borderBottom: '1px solid var(--border-light)',
-        padding: '1.25rem 2rem',
+        padding: '1rem clamp(1rem, 4vw, 2rem)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '0.6rem',
         backdropFilter: 'blur(8px)'
       }}>
         <div onClick={resetWorkflow} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}>
-          <div style={{ 
-            width: '32px', 
-            height: '32px', 
-            borderRadius: '8px', 
-            background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#070a13'
-          }}>
-            <Activity size={18} strokeWidth={2.5} />
-          </div>
+          <Logo size={32} />
           <div>
             <h1 style={{ fontSize: '1.2rem', fontWeight: '800', margin: 0, letterSpacing: '-0.02em' }}>
               AestheticShade <span style={{ color: 'var(--primary)' }}>AI</span>
@@ -384,7 +376,7 @@ export default function App() {
 
         {/* Updated progress timeline without Split Preview */}
         {step !== 'hero' && step !== 'upload' && step !== 'quality' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', fontSize: '0.8rem' }}>
+          <div className="hide-sm" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', fontSize: '0.8rem' }}>
             <div style={{ color: step === 'scan' ? 'var(--primary)' : 'var(--text-muted)', fontWeight: step === 'scan' ? 'bold' : 'normal' }}>1. Spectral Scan</div>
             <div style={{ width: '12px', height: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
             <div style={{ color: step === 'plan' ? 'var(--primary)' : 'var(--text-muted)', fontWeight: step === 'plan' ? 'bold' : 'normal' }}>2. Layering Protocol</div>
@@ -395,13 +387,13 @@ export default function App() {
           </div>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           {configured && user && (
             <>
               <button className="btn-secondary no-print" onClick={() => setShowCases(true)} style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 <FolderOpen size={14} /> My Cases
               </button>
-              <span className="no-print" title={user.email} style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span className="no-print hide-sm" title={user.email} style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user.email}
               </span>
               <button className="btn-secondary no-print" onClick={signOut} title="Sign out" style={{ padding: '0.4rem 0.55rem', fontSize: '0.8rem' }}>

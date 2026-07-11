@@ -5,7 +5,13 @@ import { saveCase } from '../lib/cases';
 
 export default function ClinicalReport({ patientInfo, scanResults, plannerConfig, onReset }) {
   const printReport = () => {
-    window.print();
+    // On Android (Capacitor) the WebView ignores window.print(); use the native
+    // bridge exposed in MainActivity. Falls back to window.print() on the web.
+    if (typeof window !== 'undefined' && window.AndroidPrinter && window.AndroidPrinter.print) {
+      window.AndroidPrinter.print();
+    } else {
+      window.print();
+    }
   };
 
   const [saveState, setSaveState] = useState('idle'); // idle | saving | saved | error
@@ -68,10 +74,12 @@ export default function ClinicalReport({ patientInfo, scanResults, plannerConfig
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem 1.5rem' }}>
       
       {/* Action Bar (hidden on print) */}
-      <div className="no-print" style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
+      <div className="no-print" style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '0.75rem',
         marginBottom: '2rem',
         background: 'rgba(255,255,255,0.02)',
         padding: '1rem',
@@ -82,7 +90,7 @@ export default function ClinicalReport({ patientInfo, scanResults, plannerConfig
           <CheckCircle size={18} />
           <span style={{ fontSize: '0.9rem', fontWeight: '500' }}>Clinical Restoration Plan Locked</span>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
           {saveState === 'error' && (
             <span style={{ fontSize: '0.75rem', color: 'var(--error)', maxWidth: '220px' }}>{saveError}</span>
           )}
@@ -111,12 +119,12 @@ export default function ClinicalReport({ patientInfo, scanResults, plannerConfig
       </div>
 
       {/* Printable Clinical Sheet */}
-      <div className="glass-panel" style={{ padding: '3rem 2.5rem', border: '1px solid var(--border-light)' }}>
-        
+      <div className="glass-panel" style={{ padding: 'clamp(1.5rem, 5vw, 3rem) clamp(1.25rem, 4vw, 2.5rem)', border: '1px solid var(--border-light)' }}>
+
         {/* Report Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '2px solid var(--border-light)', paddingBottom: '1.5rem', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', borderBottom: '2px solid var(--border-light)', paddingBottom: '1.5rem', marginBottom: '2rem' }}>
           <div>
-            <h1 style={{ fontSize: '2rem', margin: 0, letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <h1 style={{ fontSize: 'clamp(1.4rem, 6vw, 2rem)', margin: 0, letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <FileText style={{ color: 'var(--primary)' }} />
               AestheticShade AI
             </h1>
@@ -186,7 +194,7 @@ export default function ClinicalReport({ patientInfo, scanResults, plannerConfig
         </div>
 
         {/* Detailed Case Meta */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2.5rem', background: 'rgba(0,0,0,0.1)', padding: '1.25rem', borderRadius: '8px', fontSize: '0.85rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem', background: 'rgba(0,0,0,0.1)', padding: '1.25rem', borderRadius: '8px', fontSize: '0.85rem' }}>
           <div>
             <div style={{ marginBottom: '0.5rem' }}>
               <span style={{ color: 'var(--text-muted)' }}>Patient Identifier:</span> <strong style={{ color: '#ffffff' }}>{patientInfo.patientId}</strong>
@@ -286,7 +294,7 @@ export default function ClinicalReport({ patientInfo, scanResults, plannerConfig
         </div>
 
         {/* Signatures */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-light)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1.5rem', marginTop: '4rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-light)' }}>
           <div style={{ textAlign: 'center', width: '220px' }}>
             <div style={{ height: '40px' }}></div>
             <div style={{ borderTop: '1px dashed var(--text-muted)', paddingTop: '0.5rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>

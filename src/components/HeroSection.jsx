@@ -17,8 +17,8 @@ export default function HeroSection({ onStart }) {
   };
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '4rem 1.5rem' }}>
-      <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: 'clamp(2rem, 6vw, 4rem) 1.25rem', width: '100%' }}>
+      <div style={{ textAlign: 'center', marginBottom: 'clamp(2.5rem, 6vw, 4rem)' }}>
         <div style={{ 
           display: 'inline-flex', 
           alignItems: 'center', 
@@ -36,12 +36,12 @@ export default function HeroSection({ onStart }) {
           AI-Powered Esthetic Restorations
         </div>
         
-        <h1 style={{ fontSize: '3.5rem', lineHeight: '1.2', marginBottom: '1.5rem', fontWeight: '800' }}>
+        <h1 style={{ fontSize: 'clamp(2rem, 8vw, 3.5rem)', lineHeight: '1.15', marginBottom: '1.5rem', fontWeight: '800', wordBreak: 'break-word' }}>
           Objective Tooth Shade <br />
           <span className="gradient-accent-text">& Layering Analysis</span>
         </h1>
-        
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', maxWidth: '700px', margin: '0 auto' }}>
+
+        <p style={{ color: 'var(--text-secondary)', fontSize: 'clamp(1rem, 4vw, 1.2rem)', maxWidth: '700px', margin: '0 auto' }}>
           Eliminate operator subjectivity in anterior composite restorations. Capture, calibrate, and receive an automated, multi-layered material recipe based on standard dental shade guides.
         </p>
       </div>
@@ -54,8 +54,8 @@ export default function HeroSection({ onStart }) {
       }} className="dashboard-grid">
         
         {/* Left Side: Clinical Intake Card */}
-        <div className="glass-panel" style={{ padding: '2.5rem' }}>
-          <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div className="glass-panel" style={{ padding: 'clamp(1.25rem, 5vw, 2.5rem)' }}>
+          <h2 style={{ fontSize: 'clamp(1.25rem, 5vw, 1.5rem)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <Activity size={20} style={{ color: 'var(--primary)' }} />
             New Case Initialization
           </h2>
@@ -85,7 +85,7 @@ export default function HeroSection({ onStart }) {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-2col">
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                   Auto Patient ID

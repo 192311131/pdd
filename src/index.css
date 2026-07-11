@@ -221,6 +221,29 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-text-fill-color: transparent;
 }
 
+/* Prevent any element from forcing horizontal scroll on mobile */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Two-column form row that stacks on small screens */
+.form-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Hide wide/secondary elements on phones */
+@media (max-width: 640px) {
+  .form-2col {
+    grid-template-columns: 1fr;
+  }
+  .hide-sm {
+    display: none !important;
+  }
+}
+
 /* Dashboard grid layout */
 .dashboard-grid {
   display: grid;

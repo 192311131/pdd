@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Activity, LogIn, UserPlus, Loader2 } from 'lucide-react';
 import { useAuth } from '../lib/useAuth';
+import Logo from './Logo';
 
 export default function AuthScreen() {
   const { signIn, signUp } = useAuth();
@@ -51,9 +52,7 @@ export default function AuthScreen() {
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-deep)', padding: '1.5rem' }}>
       <div className="glass-panel" style={{ width: '100%', maxWidth: '400px', padding: '2.25rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.5rem' }}>
-          <div style={{ width: 34, height: 34, borderRadius: 8, background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#070a13' }}>
-            <Activity size={19} strokeWidth={2.5} />
-          </div>
+          <Logo size={34} />
           <h1 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>
             AestheticShade <span style={{ color: 'var(--primary)' }}>AI</span>
           </h1>
