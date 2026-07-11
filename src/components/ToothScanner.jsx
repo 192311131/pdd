@@ -113,7 +113,23 @@ export default function ToothScanner({ patientInfo, uploadedImage: externalImage
     });
   };
 
-  // Call the Gemini Multimodal Vision API
+  // Call the backend shade proxy (keeps the API key server-side).
+  const fetchShadeViaBackend = async (base64Data, apiBase) => {
+    setAiDiagnosticLog('Backend: requesting spectral shade analysis...');
+    const response = await fetch(`${apiBase.replace(/\/$/, '')}/api/shade`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageBase64: base64Data }),
+    });
+    if (!response.ok) {
+      let msg = `Shade API returned status ${response.status}`;
+      try { msg = (await response.json()).error || msg; } catch (_) {}
+      throw new Error(msg);
+    }
+    return response.json();
+  };
+
+  // Call the Gemini Multimodal Vision API directly (frontend key — dev only).
   const fetchGeminiShadeMatching = async (base64Data, apiKey) => {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
     
@@ -354,14 +370,18 @@ export default function ToothScanner({ patientInfo, uploadedImage: externalImage
 
     await runYOLOv11Inference(uploadedImage);
 
-    // Check for Gemini API key in env
+    // Prefer the backend proxy (key stays server-side); fall back to a direct
+    // frontend Gemini call if only VITE_GEMINI_API_KEY is set (dev convenience).
+    const apiBase = import.meta.env.VITE_API_BASE_URL;
     const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
-    if (geminiKey && geminiKey.trim() !== '') {
+    if ((apiBase && apiBase.trim() !== '') || (geminiKey && geminiKey.trim() !== '')) {
       try {
         const base64 = await getImageBase64();
         if (base64) {
-          const geminiData = await fetchGeminiShadeMatching(base64, geminiKey);
+          const geminiData = apiBase && apiBase.trim() !== ''
+            ? await fetchShadeViaBackend(base64, apiBase)
+            : await fetchGeminiShadeMatching(base64, geminiKey);
           
           setScanProgress(100);
           setIsScanning(false);

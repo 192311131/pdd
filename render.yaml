@@ -1,0 +1,16 @@
+# Render Blueprint — deploys the backend API in /server.
+# In Render: New + -> Blueprint -> connect this repo. It reads this file.
+services:
+  - type: web
+    name: aestheticshade-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false          # set the real value in the Render dashboard
+      - key: ALLOWED_ORIGINS
+        sync: false          # e.g. https://your-app.vercel.app,http://localhost:5173
