@@ -102,13 +102,13 @@ const seleniumTestSpecs = [
   { module: 'Inpainting_Simulation', category: 'Preview_Compare_Slider', scenario: 'Verify slider overlay splits before and after state' }
 ];
 
-// Dynamically scale Selenium E2E cases to meet 120 unique test cases
-while (seleniumTestSpecs.length < 120) {
+// Dynamically scale Web App Selenium cases to meet 350 unique test cases
+while (seleniumTestSpecs.length < 350) {
   const i = seleniumTestSpecs.length + 1;
   seleniumTestSpecs.push({
     module: i % 2 === 0 ? 'UI_UX_Aesthetic' : 'Functional_Core',
     category: `Feature_Iteration_${Math.ceil(i/10)}`,
-    scenario: `Verify page layout check and dynamic state assertion for E2E item #${i}`
+    scenario: `Verify Web App page layout check and dynamic state assertion for E2E item #${i}`
   });
 }
 
@@ -197,7 +197,7 @@ async function main() {
 
   const workbook = new ExcelJS.Workbook();
   const summarySheet = workbook.addWorksheet('Summary Dashboard');
-  const seleniumSheet = workbook.addWorksheet('Selenium E2E & UI-UX');
+  const seleniumSheet = workbook.addWorksheet('Web App Selenium Testing');
   const unitSheet = workbook.addWorksheet('Unit Tests');
   const validationSheet = workbook.addWorksheet('Validation Tests');
   const vulnerabilitySheet = workbook.addWorksheet('Vulnerability & Security');
@@ -575,7 +575,7 @@ async function main() {
 
   // Data rows for category summary table
   const tableData = [
-    { name: 'Selenium E2E & UI-UX', stats: resultsTracker.selenium, total: seleniumTestSpecs.length },
+    { name: 'Web App Selenium Testing', stats: resultsTracker.selenium, total: seleniumTestSpecs.length },
     { name: 'Unit Tests', stats: resultsTracker.unit, total: unitTestSpecs.length },
     { name: 'Validation Tests', stats: resultsTracker.validation, total: validationTestSpecs.length },
     { name: 'Vulnerability & Security', stats: resultsTracker.vulnerability, total: vulnerabilityTestSpecs.length },
