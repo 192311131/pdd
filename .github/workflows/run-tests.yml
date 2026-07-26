@@ -1,0 +1,45 @@
+name: Automated QA Test Execution
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  run-tests-and-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Web Application
+        run: npm run build
+
+      - name: Start Local Preview Server
+        run: |
+          npx vite preview --port 5173 --host 127.0.0.1 --base /AestheticShadeAI/ &
+          sleep 5
+
+      - name: Run E2E Test Suite & Generate Consolidated Excel Report
+        run: npm test
+        env:
+          TEST_BASE_URL: http://127.0.0.1:5173/AestheticShadeAI/
+
+      - name: Upload Consolidated E2E Excel Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: E2E_Test_Report_AestheticShadeAI
+          path: E2E_Test_Report_AestheticShadeAI.xlsx
+          if-no-files-found: error
