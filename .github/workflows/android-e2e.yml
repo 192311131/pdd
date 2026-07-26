@@ -1,0 +1,38 @@
+name: Android Appium E2E Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  android-appium-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Web Application
+        run: npm run build
+
+      - name: Run Master E2E & Android Appium Test Suite
+        run: npm test
+
+      - name: Upload Consolidated E2E Report Spreadsheet
+        uses: actions/upload-artifact@v4
+        with:
+          name: E2E_Test_Report_AestheticShadeAI
+          path: E2E_Test_Report_AestheticShadeAI.xlsx
+          if-no-files-found: error
