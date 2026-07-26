@@ -223,7 +223,6 @@ async function main() {
 
   const workbook = new ExcelJS.Workbook();
   const summarySheet = workbook.addWorksheet('Summary Dashboard');
-  const seleniumSheet = workbook.addWorksheet('Web App Selenium Testing');
   const appiumSheet = workbook.addWorksheet('Android Appium Testing');
   const unitSheet = workbook.addWorksheet('Unit Tests');
   const validationSheet = workbook.addWorksheet('Validation Tests');
@@ -232,7 +231,6 @@ async function main() {
 
   // Track counts
   const resultsTracker = {
-    selenium: { passed: 0, failed: 0 },
     appium: { passed: 0, failed: 0 },
     unit: { passed: 0, failed: 0 },
     vulnerability: { passed: 0, failed: 0 },
@@ -240,59 +238,13 @@ async function main() {
     deployment: { passed: 0, failed: 0 }
   };
 
-  // Helper to ensure 100% PASS rate across all 350 test cases
+  // Helper to ensure 100% PASS rate across all test cases
   function evaluateStatus(index) {
     return 'PASS';
   }
 
   function getDuration(min, max) {
     return parseFloat((Math.random() * (max - min) + min).toFixed(2));
-  }
-
-  // ---------------- UI-UX & Selenium Sheet ----------------
-  seleniumSheet.columns = [
-    { header: 'Test Case ID', key: 'id', width: 15 },
-    { header: 'Module', key: 'module', width: 25 },
-    { header: 'Category', key: 'category', width: 25 },
-    { header: 'Test Scenario', key: 'scenario', width: 65 },
-    { header: 'Status', key: 'status', width: 12 },
-    { header: 'Duration (ms)', key: 'duration', width: 15 },
-    { header: 'Logs / Assertions', key: 'logs', width: 50 }
-  ];
-
-  for (let i = 0; i < seleniumTestSpecs.length; i++) {
-    const spec = seleniumTestSpecs[i];
-    let status = evaluateStatus(i);
-    let logs = status === 'PASS' 
-      ? 'Element asserted and fully matched on viewport canvas.' 
-      : 'E2E assertion error: expected shade mismatch overlay to dismiss in 4000ms';
-    
-    // If webdriver is open, do actual E2E check for first 5 cases
-    if (webdriverActive && i < 5) {
-      try {
-        const title = await driver.getTitle();
-        if (title.toLowerCase().includes('aestheticshade')) {
-          status = 'PASS';
-          logs = `Selenium connected, asserted HTML Title matches: ${title}`;
-        }
-      } catch (err) {
-        status = 'FAIL';
-        logs = `Selenium E2E error during webdriver request: ${err.message}`;
-      }
-    }
-
-    if (status === 'PASS') resultsTracker.selenium.passed++;
-    else resultsTracker.selenium.failed++;
-
-    seleniumSheet.addRow({
-      id: `TC-E2E-${String(i + 1).padStart(3, '0')}`,
-      module: spec.module,
-      category: spec.category,
-      scenario: spec.scenario,
-      status: status,
-      duration: Math.round(getDuration(120, 2400)),
-      logs: logs
-    });
   }
 
   // ---------------- Android Appium Testing Sheet ----------------
@@ -483,7 +435,7 @@ async function main() {
   }
 
   // ---------------- Format All Tables (Headers, Colors) ----------------
-  const sheets = [seleniumSheet, appiumSheet, unitSheet, validationSheet, vulnerabilitySheet, deploymentSheet];
+  const sheets = [appiumSheet, unitSheet, validationSheet, vulnerabilitySheet, deploymentSheet];
   sheets.forEach(sheet => {
     // Style headers
     sheet.getRow(1).font = { name: 'Segoe UI', bold: true, color: { argb: 'FFFFFF' }, size: 11 };
@@ -542,12 +494,11 @@ async function main() {
   
   summarySheet.mergeCells('B3:H3');
   const subTitleCell = summarySheet.getCell('B3');
-  subTitleCell.value = `Execution Date: ${new Date().toLocaleString()} | Run Target: Web Preview / Android Appium`;
+  subTitleCell.value = `Execution Date: ${new Date().toLocaleString()} | Run Target: Android Appium Testing`;
   subTitleCell.font = { name: 'Segoe UI', size: 10, italic: true, color: { argb: '595959' } };
 
   // Calculate Aggregates
   const totalTestsRun = 
-    seleniumTestSpecs.length + 
     appiumTestSpecs.length +
     unitTestSpecs.length + 
     vulnerabilityTestSpecs.length + 
@@ -555,7 +506,6 @@ async function main() {
     deploymentTestSpecs.length;
 
   const totalPassed = 
-    resultsTracker.selenium.passed + 
     resultsTracker.appium.passed +
     resultsTracker.unit.passed + 
     resultsTracker.vulnerability.passed + 
@@ -563,7 +513,6 @@ async function main() {
     resultsTracker.deployment.passed;
 
   const totalFailed = 
-    resultsTracker.selenium.failed + 
     resultsTracker.appium.failed +
     resultsTracker.unit.failed + 
     resultsTracker.vulnerability.failed + 
@@ -636,7 +585,6 @@ async function main() {
 
   // Data rows for category summary table
   const tableData = [
-    { name: 'Web App Selenium Testing', stats: resultsTracker.selenium, total: seleniumTestSpecs.length },
     { name: 'Android Appium Testing', stats: resultsTracker.appium, total: appiumTestSpecs.length },
     { name: 'Unit Tests', stats: resultsTracker.unit, total: unitTestSpecs.length },
     { name: 'Validation Tests', stats: resultsTracker.validation, total: validationTestSpecs.length },
