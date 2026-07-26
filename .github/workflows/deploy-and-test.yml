@@ -11,6 +11,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: write
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 concurrency:
@@ -56,6 +57,13 @@ jobs:
         env:
           TEST_BASE_URL: http://127.0.0.1:5173/AestheticShadeAI/
 
+      - name: Upload Excel Test Report Artifact (Downloadable Zip)
+        uses: actions/upload-artifact@v4
+        with:
+          name: E2E_Test_Report_AestheticShadeAI
+          path: E2E_Test_Report_AestheticShadeAI.xlsx
+          if-no-files-found: error
+
       - name: Prepare Deployment Directory & Copy Reports
         run: |
           mkdir -p AestheticShadeWeb/dist
@@ -68,13 +76,6 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
-
-      - name: Upload Excel Test Report Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: E2E_Test_Report_AestheticShadeAI
-          path: E2E_Test_Report_AestheticShadeAI.xlsx
-          if-no-files-found: error
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
