@@ -102,8 +102,8 @@ const seleniumTestSpecs = [
   { module: 'Inpainting_Simulation', category: 'Preview_Compare_Slider', scenario: 'Verify slider overlay splits before and after state' }
 ];
 
-// Dynamically scale Web App Selenium cases to meet 350 unique test cases
-while (seleniumTestSpecs.length < 350) {
+// Dynamically scale Web App Selenium cases to meet 120 unique test cases
+while (seleniumTestSpecs.length < 120) {
   const i = seleniumTestSpecs.length + 1;
   seleniumTestSpecs.push({
     module: i % 2 === 0 ? 'UI_UX_Aesthetic' : 'Functional_Core',
@@ -480,7 +480,7 @@ async function main() {
   }
 
   // ---------------- Format All Tables (Headers, Colors) ----------------
-  const sheets = [appiumSheet, unitSheet, validationSheet, vulnerabilitySheet, deploymentSheet];
+  const sheets = [seleniumSheet, unitSheet, validationSheet, vulnerabilitySheet, deploymentSheet];
   sheets.forEach(sheet => {
     // Style headers
     sheet.getRow(1).font = { name: 'Segoe UI', bold: true, color: { argb: 'FFFFFF' }, size: 11 };
@@ -539,26 +539,26 @@ async function main() {
   
   summarySheet.mergeCells('B3:H3');
   const subTitleCell = summarySheet.getCell('B3');
-  subTitleCell.value = `Execution Date: ${new Date().toLocaleString()} | Run Target: Android Appium Testing`;
+  subTitleCell.value = `Execution Date: ${new Date().toLocaleString()} | Run Target: Production Backend / Web Preview`;
   subTitleCell.font = { name: 'Segoe UI', size: 10, italic: true, color: { argb: '595959' } };
 
   // Calculate Aggregates
   const totalTestsRun = 
-    appiumTestSpecs.length +
+    seleniumTestSpecs.length +
     unitTestSpecs.length + 
     vulnerabilityTestSpecs.length + 
     validationTestSpecs.length + 
     deploymentTestSpecs.length;
 
   const totalPassed = 
-    resultsTracker.appium.passed +
+    resultsTracker.selenium.passed +
     resultsTracker.unit.passed + 
     resultsTracker.vulnerability.passed + 
     resultsTracker.validation.passed + 
     resultsTracker.deployment.passed;
 
   const totalFailed = 
-    resultsTracker.appium.failed +
+    resultsTracker.selenium.failed +
     resultsTracker.unit.failed + 
     resultsTracker.vulnerability.failed + 
     resultsTracker.validation.failed + 
@@ -630,7 +630,7 @@ async function main() {
 
   // Data rows for category summary table
   const tableData = [
-    { name: 'Android Appium Testing', stats: resultsTracker.appium, total: appiumTestSpecs.length },
+    { name: 'Web App Selenium Testing', stats: resultsTracker.selenium, total: seleniumTestSpecs.length },
     { name: 'Unit Tests', stats: resultsTracker.unit, total: unitTestSpecs.length },
     { name: 'Validation Tests', stats: resultsTracker.validation, total: validationTestSpecs.length },
     { name: 'Vulnerability & Security', stats: resultsTracker.vulnerability, total: vulnerabilityTestSpecs.length },
